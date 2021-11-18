@@ -39,8 +39,19 @@ def autoCanny(img, sigma=0.33):
     return edged
 
 
+def channelHistogramEqualization(img):
+    img1 = cv.cvtColor(img, cv.COLOR_BGR2HSV)
+    H, S, V = img1[:, :, 0], img1[:, :, 1], img1[:, :, 2]
+    VEq = cv.equalizeHist(V)
+    img3 = cv.merge((H, S, VEq))
+    result = cv.cvtColor(img3, cv.COLOR_HSV2BGR)
+
+    return result
+
+
 def preProcessing(img):
-    img1 = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+    img0 = channelHistogramEqualization(img)
+    img1 = cv.cvtColor(img0, cv.COLOR_BGR2GRAY)
 
     img2 = cv.threshold(
         img1, 0, 255, type=cv.THRESH_BINARY+cv.THRESH_OTSU)[1]
@@ -73,7 +84,7 @@ def genGLCM(img):
 
     max_value = inds.max()+1
     matrix_coocurrence = greycomatrix(inds,
-                                      [1],  # Definição do parâmetro D da GLCM
+                                      [4],  # Definição do parâmetro D da GLCM
                                       [0, np.pi/4, np.pi/2, 3*np.pi/4],
                                       levels=max_value,
                                       normed=False,
@@ -101,16 +112,17 @@ def calcAvgPix(img):
             countH = countH + img[lin, col][0]
             countS = countS + img[lin, col][1]
             countV = countV + img[lin, col][2]
-            count = count + 1
+            #count = count + 1
 
-    return [round(countH/count), round(countS/count), round(countV/count)]
+    # return [round(countH/count), round(countS/count), round(countV/count)]
+    return [round(countH), round(countS), round(countV)]
 
 
 def colorClassKNN(files):
     imagesPath = 'Data/Images/Color Sorted'
     resultsPath = 'Data/Images/ColorSortResults'
     trainingFiles = createArchiveList(imagesPath)
-    model = KNeighborsClassifier(n_neighbors=1)  # Parâmetro K do KNMM
+    model = KNeighborsClassifier(n_neighbors=3)  # Parâmetro K do KNMM
     labels = []
     features = []
 
@@ -139,7 +151,7 @@ def damageClassKNN(files):
     imagesPath = 'Data/Images/Damage Sorted'
     resultsPath = 'Data/Images/DamageSortedResults'
     trainingFiles = createArchiveList(imagesPath)
-    model = KNeighborsClassifier(n_neighbors=2)
+    model = KNeighborsClassifier(n_neighbors=3)
     labels = []
     features = []
 
