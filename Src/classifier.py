@@ -149,7 +149,7 @@ def damageClassKNN(files):
         img = preProcessing(img)
         mtx = genGLCM(img)
 
-        for i in [1, 2, 4]:
+        for i in [0, 1]:  # Utilizando apenas contraste e dissimilaridade
             glcm.append(mtx[i][0][0])
             glcm.append(mtx[i][0][1])
             glcm.append(mtx[i][0][2])
@@ -168,7 +168,8 @@ def damageClassKNN(files):
         glcm = []
         img1 = preProcessing(img)
         mtx = genGLCM(img1)
-        for i in [1, 2, 4]:
+
+        for i in [0, 1]:  # Utilizando apenas contraste e dissimilaridade
             glcm.append(mtx[i][0][0])
             glcm.append(mtx[i][0][1])
             glcm.append(mtx[i][0][2])
