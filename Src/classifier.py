@@ -142,9 +142,9 @@ def colorClassKNN(files):
     for file in trainingFiles:
         img = cv.imread(file)
         img1 = channelHistogramEqualization(img)
-        cv.imshow('teste', img1)
+        """ cv.imshow('teste', img1)
         cv.waitKey(0)
-        cv.destroyAllWindows()
+        cv.destroyAllWindows() """
         bgr = calcAvgPix(img1)
         features.append(bgr)
         label = int(file.split('_c')[-1][:-4])
