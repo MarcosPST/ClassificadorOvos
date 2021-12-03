@@ -84,7 +84,7 @@ def genGLCM(img):
 
     max_value = inds.max()+1
     matrix_coocurrence = greycomatrix(inds,
-                                      [4],  # Definição do parâmetro D da GLCM
+                                      [10],  # Definição do parâmetro D da GLCM
                                       [0, np.pi/4, np.pi/2, 3*np.pi/4],
                                       levels=max_value,
                                       normed=False,
@@ -119,10 +119,10 @@ def calcAvgPix(img):
 
 
 def colorClassKNN(files):
-    imagesPath = 'Data/Images/Color Sorted'
+    imagesPath = 'Data/Images/ColorTraining'
     resultsPath = 'Data/Images/ColorSortResults'
     trainingFiles = createArchiveList(imagesPath)
-    model = KNeighborsClassifier(n_neighbors=3)  # Parâmetro K do KNMM
+    model = KNeighborsClassifier(n_neighbors=5)  # Parâmetro K do KNMM
     labels = []
     features = []
 
@@ -144,11 +144,11 @@ def colorClassKNN(files):
         label = model.predict([bgr])
         tag = str(label[0])
 
-        cv.imwrite(resultsPath + '/c' + tag + '/Sorted_' + file[37:], img)
+        cv.imwrite(resultsPath + '/c' + tag + '/Sorted_' + file[30:], img)
 
 
 def damageClassKNN(files):
-    imagesPath = 'Data/Images/Damage Sorted'
+    imagesPath = 'Data/Images/DamageTraining'
     resultsPath = 'Data/Images/DamageSortedResults'
     trainingFiles = createArchiveList(imagesPath)
     model = KNeighborsClassifier(n_neighbors=3)
@@ -190,11 +190,13 @@ def damageClassKNN(files):
         label = model.predict([glcm])
         tag = str(label[0])
 
-        cv.imwrite(resultsPath + '/c' + tag + '/Sorted_' + file[37:], img)
+        cv.imwrite(resultsPath + '/c' + tag + '/Sorted_' + file[31:], img)
 
 
 # src
 
-filesAll = createArchiveList(ImagesPath + '/Originals + Cracked_BGex')
-colorClassKNN(filesAll)
+filesAll = createArchiveList(ImagesPath + '/ImagensTesteDamage')
+testFilesColor = createArchiveList(ImagesPath + '/ImagensTesteColor')
+
+colorClassKNN(testFilesColor)
 damageClassKNN(filesAll)
