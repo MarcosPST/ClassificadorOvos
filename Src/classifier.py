@@ -44,13 +44,15 @@ def channelHistogramEqualization(img):
     H, S, V = img1[:, :, 0], img1[:, :, 1], img1[:, :, 2]
     VEq = cv.equalizeHist(V)
     img3 = cv.merge((H, S, VEq))
-    result = cv.cvtColor(img3, cv.COLOR_HSV2BGR)
+    #result = cv.cvtColor(img3, cv.COLOR_HSV2BGR)
+    result = img3
 
     return result
 
 
 def preProcessing(img):
     img0 = channelHistogramEqualization(img)
+    img0 = cv.cvtColor(img0, cv.COLOR_HSV2BGR)
     img1 = cv.cvtColor(img0, cv.COLOR_BGR2GRAY)
 
     img2 = cv.threshold(
@@ -84,7 +86,7 @@ def genGLCM(img):
 
     max_value = inds.max()+1
     matrix_coocurrence = greycomatrix(inds,
-                                      [10],  # Definição do parâmetro D da GLCM
+                                      [4],  # Definição do parâmetro D da GLCM
                                       [0, np.pi/4, np.pi/2, 3*np.pi/4],
                                       levels=max_value,
                                       normed=False,
@@ -102,19 +104,30 @@ def genGLCM(img):
 
 def calcAvgPix(img):
     x, y, _ = np.shape(img)
-    count = 0
+
     countH = 0
     countS = 0
     countV = 0
 
-    for lin in range(x):
+    centralX = round(x/2)
+    centralY = round(y/2)
+
+    for l in range(10):
+        for c in range(10):
+            countH = img[centralX + l][centralY + c][0]
+            countH = img[centralX - l][centralY - c][0]
+            countS = img[centralX + l][centralY + c][1]
+            countS = img[centralX - l][centralY - c][1]
+            countV = img[centralX + l][centralY + c][2]
+            countV = img[centralX - l][centralY - c][2]
+
+    """ for lin in range(x):
         for col in range(y):
             countH = countH + img[lin, col][0]
             countS = countS + img[lin, col][1]
             countV = countV + img[lin, col][2]
             #count = count + 1
-
-    # return [round(countH/count), round(countS/count), round(countV/count)]
+ """
     return [round(countH), round(countS), round(countV)]
 
 
@@ -122,13 +135,17 @@ def colorClassKNN(files):
     imagesPath = 'Data/Images/ColorTraining'
     resultsPath = 'Data/Images/ColorSortResults'
     trainingFiles = createArchiveList(imagesPath)
-    model = KNeighborsClassifier(n_neighbors=5)  # Parâmetro K do KNMM
+    model = KNeighborsClassifier(n_neighbors=2)  # Parâmetro K do KNMM
     labels = []
     features = []
 
     for file in trainingFiles:
         img = cv.imread(file)
-        bgr = calcAvgPix(img)
+        img1 = channelHistogramEqualization(img)
+        cv.imshow('teste', img1)
+        cv.waitKey(0)
+        cv.destroyAllWindows()
+        bgr = calcAvgPix(img1)
         features.append(bgr)
         label = int(file.split('_c')[-1][:-4])
         labels.append(label)
@@ -140,7 +157,8 @@ def colorClassKNN(files):
 
     for file in files:
         img = cv.imread(file)
-        bgr = calcAvgPix(img)
+        img1 = channelHistogramEqualization(img)
+        bgr = calcAvgPix(img1)
         label = model.predict([bgr])
         tag = str(label[0])
 
@@ -151,7 +169,7 @@ def damageClassKNN(files):
     imagesPath = 'Data/Images/DamageTraining'
     resultsPath = 'Data/Images/DamageSortedResults'
     trainingFiles = createArchiveList(imagesPath)
-    model = KNeighborsClassifier(n_neighbors=3)
+    model = KNeighborsClassifier(n_neighbors=2)
     labels = []
     features = []
 
