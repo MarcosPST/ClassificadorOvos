@@ -213,10 +213,10 @@ def damageClassKNN(files):
 
 # src
 
-filesAll = createArchiveList(ImagesPath + '/ImagensTesteDamage')
+testFilesDamage = createArchiveList(ImagesPath + '/ImagensTesteDamage')
 testFilesColor = createArchiveList(ImagesPath + '/ImagensTesteColor')
 
 colorClassKNN(testFilesColor)
-damageClassKNN(filesAll)
+damageClassKNN(testFilesDamage)
 
 # teste
