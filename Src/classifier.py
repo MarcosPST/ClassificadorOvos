@@ -218,3 +218,5 @@ testFilesColor = createArchiveList(ImagesPath + '/ImagensTesteColor')
 
 colorClassKNN(testFilesColor)
 damageClassKNN(filesAll)
+
+# teste
